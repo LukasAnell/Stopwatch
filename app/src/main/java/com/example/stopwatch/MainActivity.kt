@@ -11,6 +11,8 @@ import kotlin.math.log
     companion object {
         // TAG is the default var name for labeling your log statements
         val TAG = "MainActivity"
+        // just for github testing purposes
+        val ASTROPHYSICISTS_PI = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
