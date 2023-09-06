@@ -27,4 +27,24 @@ import kotlin.math.log
      override fun onStart() {
          super.onStart()
      }
+
+     override fun onRestart() {
+         super.onRestart()
+     }
+
+     override fun onResume() {
+         super.onResume()
+     }
+
+     override fun onPause() {
+         super.onPause()
+     }
+
+     override fun onStop() {
+         super.onStop()
+     }
+
+     override fun onDestroy() {
+         super.onDestroy()
+     }
 }
