@@ -2,10 +2,12 @@ package com.example.stopwatch
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
 import android.widget.Chronometer
 import androidx.constraintlayout.widget.ConstraintLayout
+import kotlin.math.abs
 import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
@@ -25,9 +27,46 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        var isStopped = true
+        var isReset = true
+        var lastPause = 0
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        wireWidgets()
+        buttonStartStop.text = "Start"
+        buttonReset.text = "Reset"
+        chronometer.base = SystemClock.elapsedRealtime()
         Log.d(TAG, "onCreate: this is a log")
+
+        buttonStartStop.setOnClickListener {
+            if(isStopped) {
+                isStopped = false
+                // isReset = true
+                buttonStartStop.text = "Stop"
+                // buttonReset.text = "Lap"
+                chronometer.base = SystemClock.elapsedRealtime() + lastPause
+                chronometer.start()
+            } else {
+                isStopped = true
+                // isReset = false
+                buttonStartStop.text = "Start"
+                //buttonReset.text = "Reset"
+                chronometer.stop()
+                lastPause = (chronometer.base - SystemClock.elapsedRealtime()).toInt()
+
+            }
+        }
+
+        buttonReset.setOnClickListener {
+            if(isReset) {
+                buttonStartStop.text = "Start"
+                isStopped = true
+                chronometer.base = SystemClock.elapsedRealtime()
+                lastPause = (chronometer.base - SystemClock.elapsedRealtime()).toInt()
+                chronometer.stop()
+            }
+        }
     }
 
     // to override an existing function, just start typing it
@@ -63,9 +102,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onDestroy: ")
     }
 
-    fun wireWidgets() {
+    private fun wireWidgets() {
         layoutMain = findViewById(R.id.layout_main)
         buttonStartStop = findViewById(R.id.button_main_startStop)
         buttonReset = findViewById(R.id.button_main_reset)
+        chronometer = findViewById(R.id.chronometer_main_stopwatch)
     }
 }
