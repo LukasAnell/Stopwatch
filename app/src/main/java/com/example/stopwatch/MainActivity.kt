@@ -6,6 +6,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
 import android.widget.Chronometer
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import kotlin.math.abs
 import kotlin.math.log
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var buttonStartStop: Button
     lateinit var buttonReset: Button
     lateinit var chronometer: Chronometer
+    lateinit var laps: TextView
 
     // public static final double PI = 3.14     declaring a classwide constant in java
     // in kotlin, we use a companion object
@@ -30,10 +32,12 @@ class MainActivity : AppCompatActivity() {
         var isStopped = true
         var isReset = true
         var lastPause = 0
+        var lapsCount = 0
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         wireWidgets()
+        laps.text = "$lapsCount"
         buttonStartStop.text = "Start"
         buttonReset.text = "Reset"
         chronometer.base = SystemClock.elapsedRealtime()
@@ -63,7 +67,7 @@ class MainActivity : AppCompatActivity() {
                 buttonStartStop.text = "Start"
                 isStopped = true
                 chronometer.base = SystemClock.elapsedRealtime()
-                lastPause = (chronometer.base - SystemClock.elapsedRealtime()).toInt()
+                lastPause = 0
                 chronometer.stop()
             }
         }
@@ -107,5 +111,6 @@ class MainActivity : AppCompatActivity() {
         buttonStartStop = findViewById(R.id.button_main_startStop)
         buttonReset = findViewById(R.id.button_main_reset)
         chronometer = findViewById(R.id.chronometer_main_stopwatch)
+        laps = findViewById(R.id.textView_main_laps)
     }
 }
