@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         wireWidgets()
-        laps.text = "$lapsCount"
+        laps.text = "Laps: $lapsCount"
         buttonStartStop.text = "Start"
         buttonReset.text = "Reset"
         chronometer.base = SystemClock.elapsedRealtime()
