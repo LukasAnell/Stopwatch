@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.Chronometer
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import java.lang.Math.abs
 
 class MainActivity : AppCompatActivity() {
     lateinit var layoutMain: ConstraintLayout
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 // isReset = true
                 buttonStartStop.text = "Stop"
                 // buttonReset.text = "Lap"
-                chronometer.base = SystemClock.elapsedRealtime() + displayTime
+                chronometer.base = SystemClock.elapsedRealtime() - displayTime
                 chronometer.start()
             } else {
                 isStopped = true
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 buttonStartStop.text = "Start"
                 //buttonReset.text = "Reset"
                 chronometer.stop()
-                displayTime = chronometer.base - SystemClock.elapsedRealtime()
+                displayTime = abs(chronometer.base - SystemClock.elapsedRealtime())
 
             }
         }
