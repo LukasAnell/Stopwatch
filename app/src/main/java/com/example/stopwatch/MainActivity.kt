@@ -8,8 +8,6 @@ import android.widget.Button
 import android.widget.Chronometer
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import kotlin.math.abs
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     lateinit var layoutMain: ConstraintLayout
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             displayTime = savedInstanceState.getLong(STATE_DISPLAY_TIME)
             // solve for base:
             // base = elapsedTime - displayTime
-            chronometer.base = SystemClock.elapsedRealtime() - abs(displayTime)
+            chronometer.base = SystemClock.elapsedRealtime() - displayTime
             Log.d(TAG, "$displayTime")
             Log.d(TAG, "${chronometer.base}")
 
