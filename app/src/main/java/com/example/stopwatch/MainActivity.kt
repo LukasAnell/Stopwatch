@@ -18,6 +18,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var chronometer: Chronometer
     lateinit var laps: TextView
 
+    var isStopped = true
+    var isReset = true
+    var displayTime = 0L
+    // var lapsCount = 0
+
     // public static final double PI = 3.14     declaring a classwide constant in java
     // in kotlin, we use a companion object
     companion object {
@@ -26,22 +31,42 @@ class MainActivity : AppCompatActivity() {
 
         // just for github testing purposes
         val ASTROPHYSICISTS_PI = 3
+
+        // make constants for your key-value pairs
+        val STATE_DISPLAY_TIME = "the display time"
+        val STATE_IS_RUNNING = "is the clock running?"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var isStopped = true
-        var isReset = true
-        var lastPause = 0
-        var lapsCount = 0
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         wireWidgets()
-        laps.text = "Laps: $lapsCount"
+
+        // laps.text = "Laps: $lapsCount"
+        laps.text = ""
         buttonStartStop.text = "Start"
         buttonReset.text = "Reset"
         chronometer.base = SystemClock.elapsedRealtime()
         Log.d(TAG, "onCreate: this is a log")
+
+        // restore saveInstanceState if it exists
+        if(savedInstanceState != null) {
+            displayTime = savedInstanceState.getLong(STATE_DISPLAY_TIME)
+            // solve for base:
+            // base = elapsedTime - displayTime
+            chronometer.base = SystemClock.elapsedRealtime() - abs(displayTime)
+            Log.d(TAG, "$displayTime")
+            Log.d(TAG, "${chronometer.base}")
+
+            isStopped = !savedInstanceState.getBoolean(STATE_IS_RUNNING)
+            if(!isStopped) {
+                chronometer.start()
+                buttonStartStop.text = "Stop"
+            } else {
+                chronometer.stop()
+                buttonStartStop.text = "Start"
+            }
+        }
 
         buttonStartStop.setOnClickListener {
             if(isStopped) {
@@ -49,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 // isReset = true
                 buttonStartStop.text = "Stop"
                 // buttonReset.text = "Lap"
-                chronometer.base = SystemClock.elapsedRealtime() + lastPause
+                chronometer.base = SystemClock.elapsedRealtime() + displayTime
                 chronometer.start()
             } else {
                 isStopped = true
@@ -57,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 buttonStartStop.text = "Start"
                 //buttonReset.text = "Reset"
                 chronometer.stop()
-                lastPause = (chronometer.base - SystemClock.elapsedRealtime()).toInt()
+                displayTime = chronometer.base - SystemClock.elapsedRealtime()
 
             }
         }
@@ -67,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 buttonStartStop.text = "Start"
                 isStopped = true
                 chronometer.base = SystemClock.elapsedRealtime()
-                lastPause = 0
+                displayTime = 0
                 chronometer.stop()
             }
         }
@@ -112,5 +137,21 @@ class MainActivity : AppCompatActivity() {
         buttonReset = findViewById(R.id.button_main_reset)
         chronometer = findViewById(R.id.chronometer_main_stopwatch)
         laps = findViewById(R.id.textView_main_laps)
+    }
+
+    // Use this to preserve state through orientation changes
+    override fun onSaveInstanceState(outState: Bundle) {
+        // Figure out the time that is currently displayed on the screen
+        // and save that in a key-value pair in the bundle
+        if(!isStopped) {
+            displayTime = SystemClock.elapsedRealtime() - chronometer.base
+        }
+        // if it weren't running, you would have saved the displayTime
+        // in the stop button's onClickListener
+
+        // save key-value pairs to the bundle before the super class call
+        outState.putLong(STATE_DISPLAY_TIME, displayTime)
+        outState.putBoolean(STATE_IS_RUNNING, !isStopped)
+        super.onSaveInstanceState(outState)
     }
 }
