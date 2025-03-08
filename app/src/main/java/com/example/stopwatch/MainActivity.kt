@@ -4,25 +4,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
-import android.widget.Button
-import android.widget.Chronometer
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import java.lang.Math.abs
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.stopwatch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    lateinit var layoutMain: ConstraintLayout
-    lateinit var buttonStartStop: Button
-    lateinit var buttonReset: Button
-    lateinit var chronometer: Chronometer
-    lateinit var laps: TextView
+    private lateinit var binding: ActivityMainBinding
 
     var isStopped = true
     var isReset = true
     var displayTime = 0L
     // var lapsCount = 0
 
-    // public static final double PI = 3.14     declaring a classwide constant in java
+    // public static final double PI = 3.14;    declaring a classwide constant in java
     // in kotlin, we use a companion object
     companion object {
         // TAG is the default var name for labeling your log statements
@@ -38,14 +32,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        wireWidgets()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         // laps.text = "Laps: $lapsCount"
-        laps.text = ""
-        buttonStartStop.text = "Start"
-        buttonReset.text = "Reset"
-        chronometer.base = SystemClock.elapsedRealtime()
+        binding.buttonMainStartStop.text = "Start"
+        binding.buttonMainReset.text = "Reset"
+        binding.chronometerMainStopwatch.base = SystemClock.elapsedRealtime()
         Log.d(TAG, "onCreate: this is a log")
 
         // restore saveInstanceState if it exists
@@ -53,46 +51,46 @@ class MainActivity : AppCompatActivity() {
             displayTime = savedInstanceState.getLong(STATE_DISPLAY_TIME)
             // solve for base:
             // base = elapsedTime - displayTime
-            chronometer.base = SystemClock.elapsedRealtime() - displayTime
+            binding.chronometerMainStopwatch.base = SystemClock.elapsedRealtime() - displayTime
             Log.d(TAG, "$displayTime")
-            Log.d(TAG, "${chronometer.base}")
+            Log.d(TAG, "${binding.chronometerMainStopwatch.base}")
 
             isStopped = !savedInstanceState.getBoolean(STATE_IS_RUNNING)
             if(!isStopped) {
-                chronometer.start()
-                buttonStartStop.text = "Stop"
+                binding.chronometerMainStopwatch.start()
+                binding.buttonMainStartStop.text = "Stop"
             } else {
-                chronometer.stop()
-                buttonStartStop.text = "Start"
+                binding.chronometerMainStopwatch.stop()
+                binding.buttonMainStartStop.text = "Start"
             }
         }
 
-        buttonStartStop.setOnClickListener {
+        binding.buttonMainStartStop.setOnClickListener {
             if(isStopped) {
                 isStopped = false
                 // isReset = true
-                buttonStartStop.text = "Stop"
+                binding.buttonMainStartStop.text = "Stop"
                 // buttonReset.text = "Lap"
-                chronometer.base = SystemClock.elapsedRealtime() - displayTime
-                chronometer.start()
+                binding.chronometerMainStopwatch.base = SystemClock.elapsedRealtime() - displayTime
+                binding.chronometerMainStopwatch.start()
             } else {
                 isStopped = true
                 // isReset = false
-                buttonStartStop.text = "Start"
+                binding.buttonMainStartStop.text = "Start"
                 //buttonReset.text = "Reset"
-                chronometer.stop()
-                displayTime = abs(chronometer.base - SystemClock.elapsedRealtime())
+                binding.chronometerMainStopwatch.stop()
+                displayTime = kotlin.math.abs(binding.chronometerMainStopwatch.base - SystemClock.elapsedRealtime())
 
             }
         }
 
-        buttonReset.setOnClickListener {
+        binding.buttonMainReset.setOnClickListener {
             if(isReset) {
-                buttonStartStop.text = "Start"
+                binding.buttonMainStartStop.text = "Start"
                 isStopped = true
-                chronometer.base = SystemClock.elapsedRealtime()
+                binding.chronometerMainStopwatch.base = SystemClock.elapsedRealtime()
                 displayTime = 0
-                chronometer.stop()
+                binding.chronometerMainStopwatch.stop()
             }
         }
     }
@@ -130,20 +128,12 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onDestroy: ")
     }
 
-    private fun wireWidgets() {
-        layoutMain = findViewById(R.id.layout_main)
-        buttonStartStop = findViewById(R.id.button_main_startStop)
-        buttonReset = findViewById(R.id.button_main_reset)
-        chronometer = findViewById(R.id.chronometer_main_stopwatch)
-        laps = findViewById(R.id.textView_main_laps)
-    }
-
     // Use this to preserve state through orientation changes
     override fun onSaveInstanceState(outState: Bundle) {
         // Figure out the time that is currently displayed on the screen
         // and save that in a key-value pair in the bundle
         if(!isStopped) {
-            displayTime = SystemClock.elapsedRealtime() - chronometer.base
+            displayTime = SystemClock.elapsedRealtime() - binding.chronometerMainStopwatch.base
         }
         // if it weren't running, you would have saved the displayTime
         // in the stop button's onClickListener
