@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "${binding.chronometerMainStopwatch.base}")
 
             isStopped = !savedInstanceState.getBoolean(STATE_IS_RUNNING)
-            if(!isStopped) {
+            if (!isStopped) {
                 binding.chronometerMainStopwatch.start()
                 binding.buttonMainStartStop.text = "Stop"
             } else {
@@ -65,6 +65,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        setListeners()
+    }
+
+    private fun setListeners() {
         binding.buttonMainStartStop.setOnClickListener {
             if(isStopped) {
                 isStopped = false
